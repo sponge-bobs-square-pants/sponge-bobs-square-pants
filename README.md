@@ -7,7 +7,7 @@
 
 - 👯 I’m looking to collaborate on **Machine Learning and Deep Learning**
 
-- 👨‍💻 All of my projects are available at [https://github.com/GradScalerTeam/LangGraph-Projects](https://github.com/GradScalerTeam/LangGraph-Projects)
+- 👨‍💻 All of my projects are available at [https://github.com/sponge-bobs-square-pants?tab=repositories](https://github.com/sponge-bobs-square-pants?tab=repositories)
 
 - 💬 Ask me about **React, Node, Express, MongoDB, Langgraph, Langchain**
 
