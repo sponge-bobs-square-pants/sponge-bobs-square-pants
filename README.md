@@ -1,6 +1,8 @@
 <h1 align="center">Hi 👋, I'm Parth Chawla</h1>
 <h3 align="center">A passionate frontend developer from India</h3>
 
+- My portfolio Link: https://parth-chawla.vercel.app
+
 - Medical LLM Model [MedicalLLM](https://github.com/GradScalerTeam/LangGraph-Projects)
 
 - 🌱 I’m currently learning **Deeplearning.io, CNN**
