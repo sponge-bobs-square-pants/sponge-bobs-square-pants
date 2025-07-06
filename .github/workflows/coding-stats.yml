@@ -33,7 +33,7 @@ jobs:
 
           def get_all_repos():
               """Get all repos user has access to"""
-              token = os.getenv('SECRET_PAT')
+              token = os.getenv('GITHUB_PAT')
               headers = {'Authorization': f'token {token}'}
               
               repos = []
@@ -63,7 +63,7 @@ jobs:
 
           def get_recent_commits(repo_full_name):
               """Get recent commits from a repo"""
-              token = os.getenv('SECRET_PAT')
+              token = os.getenv('GITHUB_PAT')
               headers = {'Authorization': f'token {token}'}
               
               # Get commits from last 7 days
@@ -86,7 +86,7 @@ jobs:
 
           def get_commit_files(repo_full_name, commit_sha):
               """Get files changed in a commit"""
-              token = os.getenv('SECRET_PAT')
+              token = os.getenv('GITHUB_PAT')
               headers = {'Authorization': f'token {token}'}
               
               try:
@@ -244,7 +244,7 @@ jobs:
 
       - name: Generate multi-repo stats
         env:
-          SECRET_PAT: ${{ secrets.SECRET_PAT }}
+          GITHUB_PAT: ${{ secrets.SECRET_PAT }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: python multi_repo_stats.py
 
