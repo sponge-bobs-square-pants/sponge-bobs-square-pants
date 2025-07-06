@@ -17,16 +17,22 @@
 
 - ⚡ Fun fact **I think India is over populated**
 <!--START_SECTION:coding-->
-## 📊 This Week's Coding Breakdown
+## 📊 This Week's Multi-Repo Coding Breakdown
 
 ```text
-📝 YAML         1 files   182 lines   ███████████████░░░░░ 75.8%
-📖 Markdown     2 files   58 lines   ████░░░░░░░░░░░░░░░░ 24.2%
+📄 JSON         148 commits  142 files  28757 changes  █████░░░░░░░░░░░░░░░ 29.8%
+🟨 JavaScript   139 commits   95 files  23972 changes  ████░░░░░░░░░░░░░░░░ 24.8%
+🐍 Python       120 commits   90 files  20461 changes  ████░░░░░░░░░░░░░░░░ 21.2%
+⚛️ React         56 commits   53 files  11918 changes  ██░░░░░░░░░░░░░░░░░░ 12.3%
+📝 Other        197 commits  181 files  8667 changes  █░░░░░░░░░░░░░░░░░░░ 9.0%
+🌐 HTML           6 commits    6 files  1296 changes  ░░░░░░░░░░░░░░░░░░░░ 1.3%
+🎨 CSS            9 commits    9 files   991 changes  ░░░░░░░░░░░░░░░░░░░░ 1.0%
+📖 Markdown       4 commits    2 files   477 changes  ░░░░░░░░░░░░░░░░░░░░ 0.5%
 ```
 
-📝 **3 files** changed • 📊 **240 lines** of code • 🗓️ **Last 7 days**
+📈 **18 commits** across **7 repositories** • 📝 **96539 lines** changed • 🗓️ **Last 7 days**
 
-*Updated: July 06, 2025 at 05:09 PM*
+*Updated: July 06, 2025 at 05:27 PM*
 
 <!--END_SECTION:coding-->
 
