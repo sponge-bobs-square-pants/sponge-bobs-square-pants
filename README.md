@@ -16,6 +16,8 @@
 - 📫 How to reach me **parthchawla65@gmail.com**
 
 - ⚡ Fun fact **I think India is over populated**
+<!--START_SECTION:coding-->
+<!--END_SECTION:coding-->
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
