@@ -244,6 +244,9 @@ jobs:
               if not lang_stats:
                   return "No recent coding activity found across your repositories! 🚀"
               
+              # Languages to hide from display (but keep data)
+              hidden_languages = {'JSON', 'HTML', 'CSS', 'Markdown', 'Other', 'YAML'}
+              
               # Sort by total changes (additions + deletions)
               sorted_langs = sorted(
                   lang_stats.items(),
@@ -251,29 +254,57 @@ jobs:
                   reverse=True
               )
               
+              # Filter out hidden languages for display
+              display_langs = [(lang, stats) for lang, stats in sorted_langs 
+                             if lang not in hidden_languages]
+              
               total_changes = sum(
                   stats['additions'] + stats['deletions'] 
                   for stats in lang_stats.values()
               )
               
-              chart = "## 📊 This Week's Multi-Repo Coding Breakdown\n\n"
+              # Calculate display total (excluding hidden languages)
+              display_total = sum(
+                  stats['additions'] + stats['deletions'] 
+                  for lang, stats in display_langs
+              )
+              
+              chart = "## 🔥 Weekly Coding Breakdown\n\n"
               chart += "```text\n"
               
-              for lang, stats in sorted_langs[:10]:  # Top 10 languages
+              # Header with better spacing
+              chart += f"{'Language':<15} {'Commits':<8} {'Files':<6} {'Changes':<8} {'Progress':<30}\n"
+              chart += "─" * 67 + "\n"
+              
+              for lang, stats in display_langs[:8]:  # Top 8 programming languages only
                   changes = stats['additions'] + stats['deletions']
-                  percentage = (changes / total_changes * 100) if total_changes > 0 else 0
+                  percentage = (changes / display_total * 100) if display_total > 0 else 0
                   icon = get_language_icon(lang)
-                  bar = create_bar(percentage)
+                  bar = create_bar(percentage, length=25)
                   
                   file_count = len(stats['files'])
                   commit_count = stats['commits']
                   
-                  chart += f"{icon} {lang:<12} {commit_count:>3} commits  {file_count:>3} files  {changes:>4} changes  {bar}\n"
+                  # Better formatting with consistent spacing
+                  lang_display = f"{icon} {lang}"
+                  chart += f"{lang_display:<15} {commit_count:<8} {file_count:<6} {changes:<8} {bar}\n"
               
               chart += "```\n\n"
-              chart += f"📈 **{total_commits} commits** across **{repo_count} repositories** • "
-              chart += f"📝 **{total_changes} lines** changed • "
+              
+              # Enhanced summary with better formatting
+              chart += f"🚀 **{total_commits} commits** • "
+              chart += f"📁 **{repo_count} repositories** • "
+              chart += f"📝 **{total_changes:,} lines** changed • "
               chart += f"🗓️ **Last 7 days**\n\n"
+              
+              # Add a cool progress indicator
+              week_progress = (datetime.now().weekday() + 1) / 7 * 100
+              week_bar = create_bar(week_progress, length=15)
+              chart += f"📅 **Week Progress:** {week_bar}\n\n"
+              
+              chart += f"*Last updated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')} UTC*\n"
+              
+              return chart
               chart += f"*Updated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}*\n"
               
               return chart
