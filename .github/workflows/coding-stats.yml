@@ -1,0 +1,182 @@
+name: Update Custom Coding Stats
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Daily at midnight
+  workflow_dispatch: # Manual trigger
+  push:
+    paths:
+      - '**.py'
+      - '**.js'
+      - '**.ts'
+      - '**.java'
+      - '**.cpp'
+      - '**.go' # Trigger when you push code
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Get full git history
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Create chart generator
+        run: |
+          cat > chart_generator.py << 'EOF'
+          import json
+          import re
+          import subprocess
+          import os
+          from datetime import datetime, timedelta
+          from collections import defaultdict
+
+          def get_git_activity():
+              """Get coding activity from git commits"""
+              try:
+                  # Get commits from last 7 days
+                  since = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+                  result = subprocess.run([
+                      'git', 'log', '--since', since, '--name-only', '--pretty=format:'
+                  ], capture_output=True, text=True)
+                  
+                  if result.returncode == 0:
+                      files = [f for f in result.stdout.split('\n') if f.strip()]
+                      return files
+              except:
+                  pass
+              return []
+
+          def detect_language(file_path):
+              ext_map = {
+                  '.py': 'Python', '.js': 'JavaScript', '.ts': 'TypeScript',
+                  '.java': 'Java', '.cpp': 'C++', '.c': 'C', '.go': 'Go',
+                  '.rs': 'Rust', '.php': 'PHP', '.rb': 'Ruby', '.swift': 'Swift',
+                  '.kt': 'Kotlin', '.cs': 'C#', '.html': 'HTML', '.css': 'CSS',
+                  '.vue': 'Vue', '.jsx': 'React', '.scss': 'SCSS', '.sql': 'SQL',
+                  '.sh': 'Bash', '.yml': 'YAML', '.json': 'JSON', '.md': 'Markdown'
+              }
+              ext = os.path.splitext(file_path)[1].lower()
+              return ext_map.get(ext, 'Other')
+
+          def count_lines(file_path):
+              """Count lines in a file"""
+              try:
+                  with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                      return len(f.readlines())
+              except:
+                  return 0
+
+          def create_bar(percentage, length=20):
+              filled = int(length * percentage / 100)
+              return f"{'█' * filled}{'░' * (length - filled)} {percentage:.1f}%"
+
+          def get_language_icon(lang):
+              icons = {
+                  'Python': '🐍', 'JavaScript': '🟨', 'TypeScript': '🔷',
+                  'Java': '☕', 'C++': '⚡', 'C': '🔧', 'Go': '🐹',
+                  'Rust': '🦀', 'PHP': '🐘', 'Ruby': '💎', 'Swift': '🍎',
+                  'HTML': '🌐', 'CSS': '🎨', 'React': '⚛️', 'Vue': '💚',
+                  'Bash': '💻', 'JSON': '📄', 'Markdown': '📖'
+              }
+              return icons.get(lang, '📝')
+
+          def generate_stats():
+              files = get_git_activity()
+              
+              if not files:
+                  return "No recent coding activity found! 🚀"
+              
+              # Count languages and lines
+              lang_stats = defaultdict(lambda: {'files': 0, 'lines': 0})
+              
+              for file_path in files:
+                  if os.path.exists(file_path):
+                      lang = detect_language(file_path)
+                      lines = count_lines(file_path)
+                      lang_stats[lang]['files'] += 1
+                      lang_stats[lang]['lines'] += lines
+              
+              if not lang_stats:
+                  return "No code files found! 🚀"
+              
+              # Sort by lines of code
+              sorted_langs = sorted(
+                  lang_stats.items(),
+                  key=lambda x: x[1]['lines'],
+                  reverse=True
+              )
+              
+              total_lines = sum(stats['lines'] for stats in lang_stats.values())
+              total_files = sum(stats['files'] for stats in lang_stats.values())
+              
+              chart = "## 📊 This Week's Coding Breakdown\n\n"
+              chart += "```text\n"
+              
+              for lang, stats in sorted_langs[:10]:
+                  percentage = (stats['lines'] / total_lines * 100) if total_lines > 0 else 0
+                  icon = get_language_icon(lang)
+                  bar = create_bar(percentage)
+                  
+                  chart += f"{icon} {lang:<12} {stats['files']} files   {stats['lines']} lines   {bar}\n"
+              
+              chart += "```\n\n"
+              chart += f"📝 **{total_files} files** changed • "
+              chart += f"📊 **{total_lines} lines** of code • "
+              chart += f"🗓️ **Last 7 days**\n\n"
+              chart += f"*Updated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}*\n"
+              
+              return chart
+
+          def update_readme():
+              chart = generate_stats()
+              
+              try:
+                  with open('README.md', 'r') as f:
+                      content = f.read()
+              except:
+                  content = ""
+              
+              start = "<!--START_SECTION:coding-->"
+              end = "<!--END_SECTION:coding-->"
+              
+              if start in content and end in content:
+                  pattern = f"{re.escape(start)}.*?{re.escape(end)}"
+                  new_content = re.sub(
+                      pattern,
+                      f"{start}\n{chart}\n{end}",
+                      content,
+                      flags=re.DOTALL
+                  )
+              else:
+                  new_content = content + f"\n\n{start}\n{chart}\n{end}\n"
+              
+              with open('README.md', 'w') as f:
+                  f.write(new_content)
+              
+              print("✅ README updated with coding stats!")
+
+          if __name__ == "__main__":
+              update_readme()
+          EOF
+
+      - name: Generate stats and update README
+        run: python chart_generator.py
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Coding Stats Bot"
+          git add README.md
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📊 Update coding activity stats"
+            git push
+          fi
