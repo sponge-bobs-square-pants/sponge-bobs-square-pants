@@ -17,6 +17,17 @@
 
 - ⚡ Fun fact **I think India is over populated**
 <!--START_SECTION:coding-->
+## 📊 This Week's Coding Breakdown
+
+```text
+📝 YAML         1 files   182 lines   ███████████████░░░░░ 75.8%
+📖 Markdown     2 files   58 lines   ████░░░░░░░░░░░░░░░░ 24.2%
+```
+
+📝 **3 files** changed • 📊 **240 lines** of code • 🗓️ **Last 7 days**
+
+*Updated: July 06, 2025 at 05:09 PM*
+
 <!--END_SECTION:coding-->
 
 <h3 align="left">Connect with me:</h3>
