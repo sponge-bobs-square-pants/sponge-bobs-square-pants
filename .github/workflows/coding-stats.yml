@@ -32,9 +32,12 @@ jobs:
           from collections import defaultdict
 
           def get_all_repos():
-              """Get all repos user has access to"""
-              token = os.getenv('GITHUB_PAT')
+              """Get all repos user has access to (excluding certain orgs)"""
+              token = os.getenv('SECRET_PAT')
               headers = {'Authorization': f'token {token}'}
+              
+              # Organizations to ignore (case insensitive)
+              ignored_orgs = ['itmo-wad', 'citizncompany', 'brandsmith-worldwide']
               
               repos = []
               page = 1
@@ -51,19 +54,32 @@ jobs:
                   page_repos = response.json()
                   if not page_repos:
                       break
+                  
+                  # Filter out ignored organizations
+                  for repo in page_repos:
+                      repo_owner = repo['owner']['login'].lower()  # Make case insensitive
+                      repo_full_name = repo['full_name']
                       
-                  repos.extend(page_repos)
+                      print(f"🔍 Found repo: {repo_full_name} (owner: {repo['owner']['login']})")
+                      
+                      if repo_owner not in [org.lower() for org in ignored_orgs]:
+                          repos.append(repo)
+                          print(f"✅ Including {repo_full_name}")
+                      else:
+                          print(f"❌ IGNORING {repo_full_name} (blocked org: {repo['owner']['login']})")
+                      
                   page += 1
                   
                   # Limit to prevent rate limiting
                   if len(repos) > 500:
                       break
               
+              print(f"\n📊 Final count: {len(repos)} repos after filtering")
               return repos
 
           def get_recent_commits(repo_full_name):
-              """Get recent commits from a repo"""
-              token = os.getenv('GITHUB_PAT')
+              """Get recent commits from a repo by the authenticated user"""
+              token = os.getenv('SECRET_PAT')
               headers = {'Authorization': f'token {token}'}
               
               # Get commits from last 7 days
@@ -71,14 +87,29 @@ jobs:
               url = f'https://api.github.com/repos/{repo_full_name}/commits'
               params = {
                   'since': since,
-                  'author': os.getenv('GITHUB_ACTOR', 'sponge-bobs-square-pants'),  # Your username
                   'per_page': 100
               }
               
               try:
                   response = requests.get(url, headers=headers, params=params)
                   if response.status_code == 200:
-                      return response.json()
+                      all_commits = response.json()
+                      
+                      # Get authenticated user info to filter commits
+                      user_response = requests.get('https://api.github.com/user', headers=headers)
+                      if user_response.status_code == 200:
+                          username = user_response.json()['login']
+                          # Filter to only commits by this user
+                          user_commits = []
+                          for commit in all_commits:
+                              commit_author = commit.get('author', {})
+                              if commit_author and commit_author.get('login') == username:
+                                  user_commits.append(commit)
+                          return user_commits
+                      else:
+                          # Fallback: return all commits if can't get user info
+                          return all_commits
+                          
               except Exception as e:
                   print(f"Error fetching commits for {repo_full_name}: {e}")
               
@@ -86,7 +117,7 @@ jobs:
 
           def get_commit_files(repo_full_name, commit_sha):
               """Get files changed in a commit"""
-              token = os.getenv('GITHUB_PAT')
+              token = os.getenv('SECRET_PAT')
               headers = {'Authorization': f'token {token}'}
               
               try:
@@ -149,6 +180,17 @@ jobs:
               total_commits = 0
               repo_count = 0
               
+              # Get the authenticated user's login
+              token = os.getenv('SECRET_PAT')
+              headers = {'Authorization': f'token {token}'}
+              user_response = requests.get('https://api.github.com/user', headers=headers)
+              if user_response.status_code == 200:
+                  username = user_response.json()['login']
+                  print(f"👤 Tracking commits for user: {username}")
+              else:
+                  username = os.getenv('GITHUB_ACTOR', 'sponge-bobs-square-pants')
+                  print(f"👤 Using fallback username: {username}")
+              
               for repo in repos:
                   repo_name = repo['full_name']
                   print(f"📂 Checking {repo_name}...")
@@ -158,19 +200,46 @@ jobs:
                       continue
                   
                   repo_count += 1
-                  total_commits += len(commits)
+                  repo_commits = 0
                   
-                  for commit in commits[:10]:  # Limit commits per repo to avoid rate limits
-                      files = get_commit_files(repo_name, commit['sha'])
-                      
-                      for file_info in files:
-                          filename = file_info['filename']
-                          lang = detect_language(filename)
+                  for commit in commits[:20]:  # Check more commits but limit to avoid rate limits
+                      # Double check this is actually the user's commit
+                      commit_author = commit.get('author', {})
+                      if commit_author and commit_author.get('login') == username:
+                          repo_commits += 1
+                          total_commits += 1
                           
-                          lang_stats[lang]['commits'] += 1
-                          lang_stats[lang]['additions'] += file_info.get('additions', 0)
-                          lang_stats[lang]['deletions'] += file_info.get('deletions', 0)
-                          lang_stats[lang]['files'].add(filename)
+                          files = get_commit_files(repo_name, commit['sha'])
+                          
+                          for file_info in files:
+                              filename = file_info['filename']
+                              lang = detect_language(filename)
+                              
+                              # Only count this commit once per language (not per file)
+                              lang_stats[lang]['files'].add(filename)
+                              lang_stats[lang]['additions'] += file_info.get('additions', 0)
+                              lang_stats[lang]['deletions'] += file_info.get('deletions', 0)
+                  
+                  # Add commit count per language based on files touched
+                  for commit in commits[:20]:
+                      commit_author = commit.get('author', {})
+                      if commit_author and commit_author.get('login') == username:
+                          files = get_commit_files(repo_name, commit['sha'])
+                          commit_languages = set()
+                          
+                          for file_info in files:
+                              filename = file_info['filename']
+                              lang = detect_language(filename)
+                              commit_languages.add(lang)
+                          
+                          # Count this commit for each unique language in the commit
+                          for lang in commit_languages:
+                              lang_stats[lang]['commits'] += 1
+                  
+                  if repo_commits > 0:
+                      print(f"  ✅ Found {repo_commits} commits by {username}")
+                  else:
+                      print(f"  ❌ No commits by {username}")
               
               if not lang_stats:
                   return "No recent coding activity found across your repositories! 🚀"
@@ -244,7 +313,7 @@ jobs:
 
       - name: Generate multi-repo stats
         env:
-          GITHUB_PAT: ${{ secrets.SECRET_PAT }}
+          SECRET_PAT: ${{ secrets.SECRET_PAT }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: python multi_repo_stats.py
 
