@@ -17,7 +17,18 @@
 
 - ⚡ Fun fact **I think India is over populated**
 <!--START_SECTION:coding-->
-No recent coding activity found across your repositories! 🚀
+## 🔥 Weekly Coding Breakdown
+
+```text
+Language        Commits  Files  Changes  Progress                      
+───────────────────────────────────────────────────────────────────
+⚛️ React        1        5      702      ███████████████████████░░ 95.1%
+🟨 JavaScript    1        2      36       █░░░░░░░░░░░░░░░░░░░░░░░░ 4.9%
+```
+
+🚀 **1 commits** • 📁 **1 repositories** • 📝 **5,052 lines** changed • 🗓️ **Last 7 days**
+
+
 <!--END_SECTION:coding-->
 
 <h3 align="left">Connect with me:</h3>
