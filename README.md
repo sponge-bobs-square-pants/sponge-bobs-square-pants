@@ -17,7 +17,17 @@
 
 - ⚡ Fun fact **I think India is over populated**
 <!--START_SECTION:coding-->
-No recent coding activity found across your repositories! 🚀
+## 🔥 Weekly Coding Breakdown
+
+```text
+Language        Commits  Files  Changes  Progress                      
+───────────────────────────────────────────────────────────────────
+🐍 Python        1        1      128      █████████████████████████ 100.0%
+```
+
+🚀 **1 commits** • 📁 **1 repositories** • 📝 **1,998 lines** changed • 🗓️ **Last 7 days**
+
+
 <!--END_SECTION:coding-->
 
 <h3 align="left">Connect with me:</h3>
