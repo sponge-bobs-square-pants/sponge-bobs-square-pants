@@ -28,7 +28,7 @@ Language        Commits  Files  Changes  Progress
 🚀 **1 commits** • 📁 **1 repositories** • 📝 **469 lines** changed • 🗓️ **Last 7 days**
 
 
-![]https://nirzak-streak-stats.vercel.app/?user=sponge-bobs-square-pants&theme=dark&hide_border=false<br/>
+[![GitHub Streak](https://nirzak-streak-stats.vercel.app?user=sponge-bobs-square-pants&theme=dark&hide_border=true)](https://git.io/streak-stats)
 
 <!--END_SECTION:coding-->
 
