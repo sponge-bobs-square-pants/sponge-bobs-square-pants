@@ -25,10 +25,8 @@ Language        Commits  Files  Changes  Progress
 ⚛️ React        1        1      469      █████████████████████████ 100.0%
 ```
 
-🚀 **1 commits** • 📁 **1 repositories** • 📝 **469 lines** changed • 🗓️ **Last 7 days**
+🚀 **6 commits** • 📁 **2 repositories** • 📝 **479 lines** changed • 🗓️ **Last 7 days**
 
-
-[![GitHub Streak](https://nirzak-streak-stats.vercel.app?user=sponge-bobs-square-pants&theme=dark)](https://git.io/streak-stats)<br/>
 
 <!--END_SECTION:coding-->
 
