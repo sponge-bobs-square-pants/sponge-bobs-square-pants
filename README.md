@@ -17,16 +17,7 @@
 
 - ⚡ Fun fact **I think India is over populated**
 <!--START_SECTION:coding-->
-## 🔥 Weekly Coding Breakdown
-
-```text
-Language        Commits  Files  Changes  Progress                      
-───────────────────────────────────────────────────────────────────
-```
-
-🚀 **5 commits** • 📁 **1 repositories** • 📝 **10 lines** changed • 🗓️ **Last 7 days**
-
-
+No recent coding activity found across your repositories! 🚀
 <!--END_SECTION:coding-->
 
 <h3 align="left">Connect with me:</h3>
